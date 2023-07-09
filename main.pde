@@ -1,16 +1,26 @@
-void setup() {
-  size(500, 500, P3D);
-  colorMode(HSB, 255, 255, 255);
-  noStroke();
-}
+import g4p_controls.*;
+import peasy.*;
+
+
 // camera settings
 int cameraX = 250, cameraY = 250;
 int cameraFOV = 1001;
+// objects
 ArrayList<Planet> objects = new ArrayList<Planet>();
 int countOfObjects = 10;
+int checkedObj = -1;
+// other variables
 int isFirstTick = 0;
 boolean randomObjSettings = true;
+boolean isPause = true;
 
+void setup() {
+  size(850, 650, P3D);
+  colorMode(HSB, 255, 255, 255);
+  strokeWeight(1);
+  noStroke();
+  createGUI();
+}
 
 
 void draw() {
@@ -27,9 +37,7 @@ void draw() {
         obj.vel.x = random(-1, 1);
         obj.vel.y = random(-1, 1);
       }
-      // set objects settings
-      else {
-      }
+      obj.id = i;
       objects.add(obj);
     }
   }
@@ -53,14 +61,31 @@ void draw() {
       cameraFOV -= 10 * cameraFOV/100;
     } else if (keyCode == DOWN) {
       cameraFOV += 10 * cameraFOV/100;
+    } else if (keyCode == ENTER) {
+      if (isPause) {
+        isPause = false;
+      } else {
+        isPause = true;
+      }
+      keyCode = 0;
     }
   }
-  
-  // draw all objects
+
+  int i = 0;
   for (Planet obj : objects) {
+    // check object
+    if (obj.id == slider_id.getValueI()) obj.checked = true;
+    else obj.checked = false;
+
+    // change object
+    if (!isPause) {
+      obj.update();
+    }
+    // draw object
     obj.drawMe();
   }
 
   // camera move
   camera(cameraX, cameraY, cameraFOV, cameraX, cameraY, 0, 0, 1, 0);
+  i++;
 }
